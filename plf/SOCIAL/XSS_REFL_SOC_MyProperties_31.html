@@ -55,7 +55,13 @@
 <tr>
 	<td>click</td>
 	<td>//a[contains(@onclick,'#EditTemplate/Two-Column_Layout')]</td>
-	<td></td></tr>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>id=titleInput</td>
+	<td></td>
+</tr>
 <tr>
 	<td>type</td>
 	<td>id=titleInput</td>
@@ -71,11 +77,9 @@
 	<td></td></tr>
 <tr>
 	<td>assertAlertNotPresent</td>
-	<td>${MSG_CODE}</td>	<td></td></tr>
-<tr>
-	<td>click</td>
-	<td>link=OK</td>
-	<td></td></tr>
+	<td>${MSG_CODE}</td>
+	<td></td>
+</tr>
 <tr>
 	<td>echo</td>
 	<td>=== Log out ===</td>
