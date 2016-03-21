@@ -32,6 +32,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>waitForElementPresent</td>
+	<td>link=My Spaces</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=My Spaces</td>
 	<td></td>
@@ -93,12 +98,12 @@
 </tr>
 <tr>
 	<td>waitForElementPresent</td>
-	<td>//td[@id='xEditingArea']</td>
+	<td>//div[@id='cke_Question']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>storeEval</td>
-	<td>window.jjQuery(&quot;#Question___Frame&quot;).contents().find('#xEditingArea iframe').contents().find('body').html(&quot;Question detail ${timestamp}&quot;)</td>
+	<td>window.jjQuery(&quot;#Question___Frame&quot;).contents().find('#cke_Question iframe').contents().find('body').html(&quot;Question detail ${timestamp}&quot;)</td>
 	<td></td>
 </tr>
 <tr>
