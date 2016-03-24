@@ -33,34 +33,39 @@ if [ -d $EXO_WORKING_DIR ]; then
     curl -fL http://selenium-release.storage.googleapis.com/2.52/selenium-server-standalone-2.52.0.jar -o ${EXO_WORKING_DIR}/selenium-server-standalone-2.52.0.jar
   fi
   
+  set -e
   if [ ! -f plf-community-tomcat-standalone-4.3.0.zip ]; then
     echo "INFO: downloading plf-community-tomcat-standalone-4.3.0.zip"
     curl -fL https://repository.exoplatform.org/service/local/repositories/exo-releases/content/org/exoplatform/platform/distributions/plf-community-tomcat-standalone/4.3.0/plf-community-tomcat-standalone-4.3.0.zip -o ${EXO_WORKING_DIR}/plf-community-tomcat-standalone-4.3.0.zip
-    mkdir ${EXO_WORKING_DIR}/TC || true
-    if [ -d ${EXO_WORKING_DIR}/TC/current ]; then
-      echo "INFO: removing ${EXO_WORKING_DIR}/TC/current"
-      rm -rf ${EXO_WORKING_DIR}/TC/current
-    fi
-    unzip -q ${EXO_WORKING_DIR}/plf-community-tomcat-standalone-4.3.0.zip -d /tmp/PLF
-    TMP_PLF_DIR=`find /tmp/PLF -maxdepth 1 -mindepth 1`
-    if [ $? -eq 0 ]; then
-      mv $TMP_PLF_DIR/* ${EXO_WORKING_DIR}/TC/current/
-      # extract dataset
-      echo "INFO: Extracting dataset" # extract dataset
-      
-      pushd ${EXO_WORKING_DIR}/TC/current/
-      mkdir DATASET
-      pushd DATASET
-      # this dataset contain conf/server.xml and webapps/eXoResources.war together with gatein/data
-      tar xf ${EXO_WORKING_DIR}/automation_xss_tc/plf_templates/datasets/plf43comm/PLF43_DATASET_HSQL.tar.bz2
-      popd
-      cp DATASET/* . -R
-      rm -rf DATASET
-      echo "INFO: ${EXO_WORKING_DIR}/TC/current/ is now ready to run"
-      popd #to EXO_WORKING_DIR
-      
-      echo "${EXO_WORKING_DIR}/TC/current/ RE_USE!SAMPLES 3600 SAMPLE_TEST_WITH_PLF43 SHOULD_WORK!eXoPLF.install.sh"
-    fi
+  fi
+  
+  mkdir ${EXO_WORKING_DIR}/TC || true
+  if [ -d ${EXO_WORKING_DIR}/TC/current ]; then
+    echo "INFO: removing ${EXO_WORKING_DIR}/TC/current"
+    rm -rf ${EXO_WORKING_DIR}/TC/current/*
+  else
+    mkdir ${EXO_WORKING_DIR}/TC/current
+  fi
+  rm -rf /tmp/PLF || true
+  unzip -q ${EXO_WORKING_DIR}/plf-community-tomcat-standalone-4.3.0.zip -d /tmp/PLF
+  TMP_PLF_DIR=`find /tmp/PLF -maxdepth 1 -mindepth 1`
+  if [ $? -eq 0 ]; then
+    mv $TMP_PLF_DIR/* ${EXO_WORKING_DIR}/TC/current/
+    # extract dataset
+    echo "INFO: Extracting dataset" # extract dataset
+    
+    pushd ${EXO_WORKING_DIR}/TC/current/
+    mkdir DATASET
+    pushd DATASET
+    # this dataset contain conf/server.xml and webapps/eXoResources.war together with gatein/data
+    tar xf ${EXO_WORKING_DIR}/automation_xss_tc/testsuite/plf_templates/datasets/plf43comm/PLF43_DATASET_HSQL.tar.bz2
+    popd
+    cp DATASET/* . -R
+    rm -rf DATASET
+    echo "INFO: ${EXO_WORKING_DIR}/TC/current/ is now ready to run"
+    popd #to EXO_WORKING_DIR
+    
+    echo "${EXO_WORKING_DIR}/TC/current/ RE_USE!SAMPLES 3600 SAMPLE_TEST_WITH_PLF43 SHOULD_WORK!eXoPLF.install.sh" > ${EXO_WORKING_DIR}/automation_xss_tc/testsuite/TEST_VIRGO_CURRENT_CONFIG
   fi
 else
   echo "ERROR: Expect to have the folder $EXO_WORKING_DIR to exist"
