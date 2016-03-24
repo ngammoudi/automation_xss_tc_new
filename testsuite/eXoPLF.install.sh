@@ -144,7 +144,6 @@ if [ "`echo ${CONTROLLER_PARAMS} | awk '{print $4}' `" == "RE_USE" ]; then
       echo " ${LOG_PREFIX_INFO} PLF STARTUP  "
 
       PLF_STARTUP_COMMAND="bash ./start_eXo.sh"
-      SERVER_STARTUP_NOTIFICATION="Started in"
 
       rm -f ${DATASET_TARGET_DIR}/*.sql
       echo "Start the PLF with command: ${PLF_STARTUP_COMMAND}"
