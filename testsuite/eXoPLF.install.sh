@@ -184,8 +184,8 @@ if [ "`echo ${CONTROLLER_PARAMS} | awk '{print $4}' `" == "RE_USE" ]; then
       echo " -------------- APPLICATION PROCESS INFO ------------------------"
       ps aux | grep java | grep "${WORKING_DIR}">${ORIGINAL_DIR}/${TESTPLAN}_process.info
       
-      curl 'http://localhost:8080/trial/terms-and-conditions-action' -H 'Host: localhost:8080' --data 'checktc=true'
-      curl 'http://localhost:8080/registration/software-register-action' --data 'value=skip'
+      #curl 'http://localhost:8080/trial/terms-and-conditions-action' -H 'Host: localhost:8080' --data 'checktc=true'
+      #curl 'http://localhost:8080/registration/software-register-action' --data 'value=skip'
 
       cat ${ORIGINAL_DIR}/${TESTPLAN}_process.info
   fi

@@ -65,6 +65,8 @@ if [ -d $EXO_WORKING_DIR ]; then
     echo "INFO: ${EXO_WORKING_DIR}/TC/current/ is now ready to run"
     popd #to EXO_WORKING_DIR
     
+    mkdir $HOME/.eXo/Platform/ || true
+    cp ${EXO_WORKING_DIR}/automation_xss_tc/testsuite/plf_templates/datasets/plf43comm/license.xml $HOME/.eXo/Platform/
     echo "${EXO_WORKING_DIR}/TC/current/ RE_USE!SAMPLES 3600 SAMPLE_TEST_WITH_PLF43 SHOULD_WORK!eXoPLF.install.sh" > ${EXO_WORKING_DIR}/automation_xss_tc/testsuite/TEST_VIRGO_CURRENT_CONFIG
   fi
 else
