@@ -1,5 +1,11 @@
 #!/bin/bash
 
+DEBUG_MODE=${DEBUG_MODE:-"false"}
+
+if [ "${DEBUG_MODE}" == "true" ]; then
+  set -xv
+fi
+
   export testplan=$2;#"KS_WIKI_BENCH_005"
   export stageresultfile=${testplan}_testresult.log;
   export stageresultfile_upload=${testplan}_upload_testresult.log;
@@ -209,49 +215,50 @@ if [ "${STAGE}" == "SECURITY_TEST" ]; then
       else
 	./timeout.sh $(( TEST_DURATION /60 )):`readlink -f ${SELENIUM_TEST_SCRIPT}` ${TEST_FOLDER_NAME}
       fi
-    fi
-    report_path=`readlink -f ./${TESTSCRIPT}_latestresult`
-    report_fail_line=`grep -o -E "class=\"status_failed\".*Failed:.*>[0-9]+\(XSS=[0-9]+\)<" ./${TESTSCRIPT}_latestresult/TEST_RESULT_REPORT*.html | grep -o -E ">[0-9]+\(XSS=[0-9]+\)<"`
-    
-    report_total_count=`grep -o -E "Total:.*>[0-9]+<" ./${TESTSCRIPT}_latestresult/TEST_RESULT_REPORT*.html | grep -o -E "[0-9]+"`
-    report_not_run_count=`grep -o -E "Not run yet:.*>[0-9]+<" ./${TESTSCRIPT}_latestresult/TEST_RESULT_REPORT*.html | grep -o -E "[0-9]+"`
-    report_fail_total=`echo ${report_fail_line} | grep -o -E ">[0-9]+" | grep -o -E "[0-9]+" `
-    report_fail_xss=`echo ${report_fail_line} | grep -o -E "XSS=[0-9]+\)"| grep -o -E "[0-9]+" `
-    report_result_status=""
-    report_result_status="${report_result_status}__${report_total_count}_TOTAL"
-    if [ ${report_fail_total} -gt 0 ]; then
-      report_result_status="__${report_result_status}__${report_fail_total}_FAILED"
-      if [ ${report_fail_xss} -gt 0 ]; then
-	report_result_status="${report_result_status}__${report_fail_xss}_XSS"
-      fi
-    else
-      report_result_status="${report_result_status}__PASSED"
-    fi
-    if [ ${report_not_run_count} -gt 0 ]; then
-      report_result_status="${report_result_status}__${report_not_run_count}_UNDONE"
-    fi
-    
-    echo "`date`,INFO::report_path=${report_path}"
-    ln -s ${report_path} ${report_path}_${TEST_FOLDER_NAME}${report_result_status}
-    report_path_basename="`basename ${report_path}_${TEST_FOLDER_NAME}${report_result_status}`"
-    echo "${BUILD_ID}!${report_path}_${TEST_FOLDER_NAME}${report_result_status}!SECURITY_AUTOMATION_REPORT/${TEST_GROUP_ID}/${report_path_basename}">>${testplan_upload_queue}
 
-    #mkdir ${report_path}/logs
-    cp ${APPLICATION_PATH}/logs/catalina.out* ${report_path}/
-    cp ${APPLICATION_PATH}/logs/local*access* ${report_path}/
-    grep -n -A 5 -B 5 "MSG_CODE=" ${report_path}/local*access*
-    gzip ${report_path}/local*access*
-    gzip ${report_path}/catalina*
-    pushd ${report_path}
-    mkdir details
-    mv * details
-    mv details/TEST_RESULT_REPORT*.html .
-    sed -i '0,/detailframe.src=src/s/detailframe.src=src/detailframe.src=".\/details\/"+src/g' TEST_RESULT_REPORT*.html
-    find ./details -type f -name "RESULT_SUITE_*.html" | xargs -n 1 sed -i -r 's#<a href="[^>]+">([^<]+)</a></td></tr>#<a onclick="function showimage(){document.location.href=document.location.href.toString().replace('\''jmeter/results/'\'','\''jmeter/results/listdir.php?path=../results/'\'')+'\''_log'\'';}; showimage();" href="\#">\1</a></td></tr>#g'
-    popd
-    echo ${SUCCESS_STATE}>${stageresultfile};
-    echo "Local report storage: ${report_path}"
-    echo "The test report should be uploaded to: https://qaf-reports.exoplatform.org/archives/jmeter/results/listdir.php?path=../results/SECURITY_AUTOMATION_REPORT/${TEST_GROUP_ID}/${report_path_basename}"
+      report_path=`readlink -f ./${TESTSCRIPT}_latestresult`
+      report_fail_line=`grep -o -E "class=\"status_failed\".*Failed:.*>[0-9]+\(XSS=[0-9]+\)<" ./${TESTSCRIPT}_latestresult/TEST_RESULT_REPORT*.html | grep -o -E ">[0-9]+\(XSS=[0-9]+\)<"`
+      
+      report_total_count=`grep -o -E "Total:.*>[0-9]+<" ./${TESTSCRIPT}_latestresult/TEST_RESULT_REPORT*.html | grep -o -E "[0-9]+"`
+      report_not_run_count=`grep -o -E "Not run yet:.*>[0-9]+<" ./${TESTSCRIPT}_latestresult/TEST_RESULT_REPORT*.html | grep -o -E "[0-9]+"`
+      report_fail_total=`echo ${report_fail_line} | grep -o -E ">[0-9]+" | grep -o -E "[0-9]+" `
+      report_fail_xss=`echo ${report_fail_line} | grep -o -E "XSS=[0-9]+\)"| grep -o -E "[0-9]+" `
+      report_result_status=""
+      report_result_status="${report_result_status}__${report_total_count}_TOTAL"
+      if [ ${report_fail_total} -gt 0 ]; then
+	report_result_status="__${report_result_status}__${report_fail_total}_FAILED"
+	if [ ${report_fail_xss} -gt 0 ]; then
+	  report_result_status="${report_result_status}__${report_fail_xss}_XSS"
+	fi
+      else
+	report_result_status="${report_result_status}__PASSED"
+      fi
+      if [ ${report_not_run_count} -gt 0 ]; then
+	report_result_status="${report_result_status}__${report_not_run_count}_UNDONE"
+      fi
+      
+      echo "`date`,INFO::report_path=${report_path}"
+      ln -s ${report_path} ${report_path}_${TEST_FOLDER_NAME}${report_result_status}
+      report_path_basename="`basename ${report_path}_${TEST_FOLDER_NAME}${report_result_status}`"
+      echo "${BUILD_ID}!${report_path}_${TEST_FOLDER_NAME}${report_result_status}!SECURITY_AUTOMATION_REPORT/${TEST_GROUP_ID}/${report_path_basename}">>${testplan_upload_queue}
+
+      #mkdir ${report_path}/logs
+      cp ${APPLICATION_PATH}/logs/catalina.out* ${report_path}/
+      cp ${APPLICATION_PATH}/logs/local*access* ${report_path}/
+      grep -n -A 5 -B 5 "MSG_CODE=" ${report_path}/local*access*
+      gzip ${report_path}/local*access*
+      gzip ${report_path}/catalina*
+      pushd ${report_path}
+      mkdir details
+      mv * details
+      mv details/TEST_RESULT_REPORT*.html .
+      sed -i '0,/detailframe.src=src/s/detailframe.src=src/detailframe.src=".\/details\/"+src/g' TEST_RESULT_REPORT*.html
+      find ./details -type f -name "RESULT_SUITE_*.html" | xargs -n 1 sed -i -r 's#<a href="[^>]+">([^<]+)</a></td></tr>#<a onclick="function showimage(){document.location.href=document.location.href.toString().replace('\''jmeter/results/'\'','\''jmeter/results/listdir.php?path=../results/'\'')+'\''_log'\'';}; showimage();" href="\#">\1</a></td></tr>#g'
+      popd
+      echo ${SUCCESS_STATE}>${stageresultfile};
+      echo "Local report storage: ${report_path}"
+      echo "The test report should be uploaded to: https://qaf-reports.exoplatform.org/archives/jmeter/results/listdir.php?path=../results/SECURITY_AUTOMATION_REPORT/${TEST_GROUP_ID}/${report_path_basename}"
+    fi
   else
     echo ${FAILURE_STATE}>${stageresultfile};
   fi
