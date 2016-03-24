@@ -71,7 +71,7 @@
 <tr>
 	<td>type</td>
 	<td>id=MultiUploadInputFiles</td>
-	<td>/java/exo-working/automation_xss_tc/plf4.0.x/COMMON/%3Cscript%3Ealert(${MSG_CODE})%3B%3C%2Fscript%3E.txt</td>
+	<td>/java/exo-working/automation_xss_tc/plf4.0.x/COMMON/%3Cscript%3Exalert(${MSG_CODE})%3B%3C%2Fscript%3E.txt</td>
 </tr>
 <tr>
 	<td>assertAlertNotPresent</td>
@@ -82,11 +82,11 @@
 	<td></td></tr>
 <tr>
 	<td>waitForTextPresent</td>
-	<td>&lt;script&gt;alert(${MSG_CODE});&lt;/script&gt;.txt</td>
+	<td>&lt;script&gt;xalert(${MSG_CODE});&lt;/script&gt;.txt</td>
 	<td></td></tr>
 <tr>
 	<td>mouseDownRight</td>
-	<td>//span[contains(text(),'&lt;script&gt;alert(${MSG_CODE});&lt;/script&gt;.txt') and @class='nodeName']</td>
+	<td>//span[contains(text(),'&lt;script&gt;xalert(${MSG_CODE});&lt;/script&gt;.txt') and @class='nodeName']</td>
 	<td></td></tr>
 <tr>
 	<td>click</td>

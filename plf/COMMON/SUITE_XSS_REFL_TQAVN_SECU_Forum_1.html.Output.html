@@ -134,7 +134,7 @@ a {
 <tr class="  status_done" style="cursor: pointer;">
 	<td>type</td>
 	<td>//input[@id='inputValue']</td>
-	<td>&lt;script&gt;alert("XSS")&lt;/script&gt;</td>
+	<td>&lt;script&gt;xalert("XSS")&lt;/script&gt;</td>
 </tr>
 <tr class="  status_done" style="cursor: pointer;">
 	<td>keyPress</td>
@@ -171,7 +171,7 @@ info: Executing: |echo | === Input  on Forums searchbox === |  |
 info: Executing: |clickAndWait | link=Forums |  |
 info: Executing: |waitForElementPresent | //input[@id=&apos;inputValue&apos;] |  |
 info: Executing: |click | //input[@id=&apos;inputValue&apos;] |  |
-info: Executing: |type | //input[@id=&apos;inputValue&apos;] | &lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt; |
+info: Executing: |type | //input[@id=&apos;inputValue&apos;] | &lt;script&gt;xalert(&quot;XSS&quot;)&lt;/script&gt; |
 info: Executing: |keyPress | //input[@id=&apos;inputValue&apos;] | \13 |
 info: Executing: |assertAlertNotPresent |  | XSS |
 info: Executing: |include | COMM_logout.html |  |
