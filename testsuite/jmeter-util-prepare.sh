@@ -10,6 +10,30 @@ if [ -d $EXO_WORKING_DIR ]; then
     git clone https://github.com/nghinv/automation_xss_tc_new.git 
     ln -s automation_xss_tc_new automation_xss_tc
   fi
+
+  if [ ! -d w3af_auto ]; then
+    echo "INFO: w3af_auto"
+    git clone https://github.com/nghinv/w3af_auto.git
+    pushd w3af_auto
+
+    mkdir tools
+    git clone https://github.com/nghinv/w3af.git
+    mkdir tools/dependencies
+    cd tools/dependencies
+    echo "... install w3af dependencies: "
+    apt-get update
+    echo "... install w3af dependencies: python-soappy python-lxml python-svn python-scapy"
+    apt-get install python-soappy python-lxml python-svn python-scapy
+    apt-get install python-openssl
+
+    echo "... install w3af dependencies: nltk-2.0b9.tar.gz, pybloomfiltermmap-0.2.0.tar.gz, PyYAML-3.09.tar.gz"
+    wget https://pypi.python.org/packages/source/n/nltk/nltk-2.0b9.tar.gz && tar xf nltk-2.0b9.tar.gz && cd nltk-2.0b9 && python setup.py install
+    wget https://pypi.python.org/packages/source/p/pybloomfiltermmap/pybloomfiltermmap-0.2.0.tar.gz && tar xf pybloomfiltermmap-0.2.0.tar.gz && cd pybloomfiltermmap-0.2.0 && python setup.py install
+    wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz && tar xf PyYAML-3.09.tar.gz && cd PyYAML-3.09 && python setup.py install
+
+    popd
+  fi
+
   #download firefox
   if [ ! -f firefox-21.0b7.tar.bz2 ]; then
     if [ ! -d firefox21 ]; then
