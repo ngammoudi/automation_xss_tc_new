@@ -31,6 +31,8 @@ rm -f ${TESTSCRIPT}_latestresult
 ln -s ${test_result_dir} ${TESTSCRIPT}_latestresult
 
 cp ${automation_project_dir}/COMMON/COMM_*.html ${test_result_dir}
+cp ${automation_project_dir}/COMMON/*.xml ${test_result_dir}
+
 rm -f RESUL_SUITE_*.html
 rm -f SUITE_*.html
 

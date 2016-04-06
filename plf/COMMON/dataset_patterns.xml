@@ -1,0 +1,5 @@
+<testdata>
+  <test SELECTED="false" INPUT_FORM="'&lt;script&gt;xalert(MSG_CODE);&lt;/script&gt;'" INPUT_FORM_1="&quot;&amp;lt;script&amp;gt;xalert(MSG_CODE)&amp;lt;/script&amp;gt;&quot;" />
+  <test SELECTED="true" INPUT_FORM="'&lt;script&gt;yalert(MSG_CODE);&lt;/script&gt;'" INPUT_FORM_1="&quot;&amp;lt;script&amp;gt;yalert(MSG_CODE)&amp;lt;/script&amp;gt;&quot;" />
+  <test SELECTED="false" INPUT_FORM="'&lt;script&gt;yalert(MSG_CODE);&lt;/script&gt;'" INPUT_FORM_1="&quot;&amp;lt;script&amp;gt;yalert(MSG_CODE)&amp;lt;/script&amp;gt;&quot;" />
+</testdata>
