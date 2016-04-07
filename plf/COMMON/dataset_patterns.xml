@@ -1,5 +1,13 @@
 <testdata>
-  <test SELECTED="true" INPUT_FORM="'&lt;script&gt;xalert(MSG_CODE);&lt;/script&gt;'" INPUT_FORM_1="'&amp;lt;script&amp;gt;xalert(MSG_CODE);&amp;lt;/script&amp;gt;'" />
-  <test SELECTED="false" INPUT_FORM="'&lt;img src=/ onerror=&quot;xalert(MSG_CODE);&quot;/&gt;'" INPUT_FORM_1="'&amp;lt;img src=/ onerror=&amp;quot;xalert(MSG_CODE);&amp;quot;/&amp;gt;'" />
-  <test SELECTED="false" INPUT_FORM="'&lt;iframe src=&quot;javascript:xalert(MSG_CODE);&quot;/&gt;'" INPUT_FORM_1="'&amp;lt;iframe src=&amp;quot;javascript:xalert(MSG_CODE);&amp;quot;/&amp;gt;'" />
+<test SELECTED="false" INPUT_FORM="'&lt;script&gt;xalert(MSG_CODE);&lt;/script&gt;'" INPUT_FORM_1="'&amp;lt;script&amp;gt;xalert(MSG_CODE);&amp;lt;/script&amp;gt;'" />
+<test SELECTED="false" INPUT_FORM="'&lt;img src=/ onerror=&quot;xalert(MSG_CODE);&quot;/&gt;'" INPUT_FORM_1="'&amp;lt;img src=/ onerror=&amp;quot;xalert(MSG_CODE);&amp;quot;/&amp;gt;'" />
+<test SELECTED="false" INPUT_FORM="'&lt;iframe src=&quot;javascript:xalert(MSG_CODE);&quot;/&gt;'" INPUT_FORM_1="'&amp;lt;iframe src=&amp;quot;javascript:xalert(MSG_CODE);&amp;quot;/&amp;gt;'" />
+<test SELECTED="true" INPUT_FORM="'&amp;lt;img src=&amp;quot;javascript:xalert(MSG_CODE)&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;img src=&quot;javascript:xalert(MSG_CODE)&quot;&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;body onload=alert(MSG_CODE)&amp;gt;'" INPUT_FORM_1="'&lt;body onload=alert(MSG_CODE)&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;body background=&amp;quot;javascript:xalert(MSG_CODE)&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;body background=&quot;javascript:xalert(MSG_CODE)&quot;&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;img dynsrc=&amp;quot;javascript:xalert(MSG_CODE)&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;img dynsrc=&quot;javascript:xalert(MSG_CODE)&quot;&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;img lowsrc=&amp;quot;javascript:xalert(MSG_CODE)&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;img lowsrc=&quot;javascript:xalert(MSG_CODE)&quot;&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;base href=&amp;quot;javascript:xalert(MSG_CODE);//&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;base href=&quot;javascript:xalert(MSG_CODE);//&quot;&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;img style=&amp;quot;xss:expr/*xss*/ession(alert(MSG_CODE))&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;img style=&quot;xss:expr/*xss*/ession(alert(MSG_CODE))&quot;&gt;'" />
+<test SELECTED="false" INPUT_FORM="'&amp;lt;input type=&amp;quot;image&amp;quot; src=&amp;quot;javascript:xalert(MSG_CODE);&amp;quot;&amp;gt;'" INPUT_FORM_1="'&lt;input type=&quot;image&quot; src=&quot;javascript:xalert(MSG_CODE);&quot;&gt;'" />
 </testdata>
