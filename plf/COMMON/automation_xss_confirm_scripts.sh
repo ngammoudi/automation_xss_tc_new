@@ -95,7 +95,7 @@ sed -i "s#${test_definition_table}#${test_definition}\n${test_definition_table}#
 #sed -i "s#${test_definition_table}#${test_definition}\n${test_definition_table}#g" ${testsuite}
 #sed -i "s#${test_definition_table}#${test_definition}\n${test_definition_table}#g" ${testsuite}
 
-java -jar ${TEST_SELENIUM_VERSION_OPTION} ${TEST_SELENIUM_OTHER_OPTIONS} -ensureCleanSession -userExtensions user-extensions.js -htmlSuite "${TEST_BROWSER_OPTION}" "${TEST_TARGET_OPTION}/" "./${testsuite}" "./RESULT_${testsuite}"
+timeout 10m java -jar ${TEST_SELENIUM_VERSION_OPTION} ${TEST_SELENIUM_OTHER_OPTIONS} -ensureCleanSession -userExtensions user-extensions.js -htmlSuite "${TEST_BROWSER_OPTION}" "${TEST_TARGET_OPTION}/" "./${testsuite}" "./RESULT_${testsuite}"
 
 for testscript in `find * -type f | grep -v -E "(^SUITE_|^COMM_)" | grep -E "(^|/)XSS_(STOR|REFL|REG).*html$"`; do
   echo "`date`, INFO:: testscript=${testscript} "
