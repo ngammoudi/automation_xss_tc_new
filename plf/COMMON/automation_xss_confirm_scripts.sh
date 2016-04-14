@@ -38,6 +38,10 @@ rm -f SUITE_*.html
 
 cp ${automation_project_dir}/COMMON/tqa-secu-user-extensions.js ${test_result_dir}/user-extensions.js
 cp ${automation_project_dir}/COMMON/*.jar ${test_result_dir}
+if [ "x${DATASET_ROW_ID}" != "x" ]; then
+  sed -i -r 's/ SELECTED="true"/ SELECTED="false"/g' ${test_result_dir}/dataset_patterns.xml
+  sed -i -r 's/( ID="'${DATASET_ROW_ID}'".* SELECTED=")[^"]+"/\1true"/g' ${test_result_dir}/dataset_patterns.xml
+fi
 find ${automation_project_dir}/${TEST_MODULE}/* -type f | grep -v -E "(^SUITE|/SUITE|COMMON|TESTS/)" | grep -E "(^|/)XSS_(STOR|REFL|REG).*html$" | xargs -I {} cp {} ${test_result_dir}
 
 function replace_assertion()
@@ -132,7 +136,7 @@ for testsuite in `find SUITE_* -type f | grep -E "html$"`; do
    testscript2=`echo ${testscript} | sed -r 's#\.html$##g'`
    if [ ! ${init_element} -gt 0 ]; then
      init_element=1
-     sed -i "s/input type=\"hidden\" id=\"init_element\" value=\"#\"/input type=\"hidden\" id=\"init_element\" value=\"RESULT_${testsuite}\"/g" ${test_result_file}
+     sed -i "s/input type=\"hidden\" id=\"init_element\" value=\"\#\"/input type=\"hidden\" id=\"init_element\" value=\"RESULT_${testsuite}\"/g" ${test_result_file}
    fi
    nohup ../../COMMON/automation_xss_take_screen_shot.sh ${test_result_dir}/RESULT_${testsuite} $$ 5 &
    pid=$!
@@ -194,3 +198,4 @@ gzip user-extensions.js
 rm -f selenium-server-standalone*
 gzip COMM_*
 gzip XSS*
+
