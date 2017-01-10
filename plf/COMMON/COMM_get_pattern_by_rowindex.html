@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://en79.tribalwars.net/" />
+<title>New Test</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">New Test</td></tr>
+</thead><tbody>
+<tr>
+	<td>store</td>
+	<td>1</td>
+	<td>DATASET_ROW_INDEX</td>
+</tr>
+<tr>
+	<td>loadTestData</td>
+	<td>${DATASET}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>while</td>
+	<td>!testdata.EOF() &amp;&amp; &quot;${SELECTED}&quot; !=&quot;true&quot;</td>
+	<td></td>
+</tr>
+<tr>
+	<td>nextTestData</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>${DATASET_ROW_INDEX} + 1</td>
+	<td>DATASET_ROW_INDEX</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>javascript{var pattern=storedVars['INPUT_FORM']; if (pattern === undefined) pattern=&quot;MSG_CODE&quot;; var MSG_CODE=storedVars['MSG_CODE']; pattern.replace(&quot;MSG_CODE&quot;,MSG_CODE);}</td>
+	<td>X_INPUT_PATTERN</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>javascript{var pattern=storedVars['INPUT_FORM_1']; if (pattern === undefined) pattern=storedVars['INPUT_FORM']; var MSG_CODE=storedVars['MSG_CODE']; pattern.replace(&quot;MSG_CODE&quot;,MSG_CODE);}</td>
+	<td>X_INPUT_PATTERN_1</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>javascript{var pattern=storedVars['INPUT_FORM_2']; if (pattern === undefined) pattern=storedVars['INPUT_FORM']; var MSG_CODE=storedVars['MSG_CODE']; pattern.replace(&quot;MSG_CODE&quot;,MSG_CODE);}</td>
+	<td>X_INPUT_PATTERN_2</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>javascript{var pattern=storedVars['INPUT_FORM_3']; if (pattern === undefined) pattern=storedVars['INPUT_FORM']; var MSG_CODE=storedVars['MSG_CODE']; pattern.replace(&quot;MSG_CODE&quot;,MSG_CODE);}</td>
+	<td>X_INPUT_PATTERN_3</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>javascript{var pattern=storedVars['INPUT_FORM_4']; if (pattern === undefined) pattern=storedVars['INPUT_FORM']; var MSG_CODE=storedVars['MSG_CODE']; pattern.replace(&quot;MSG_CODE&quot;,MSG_CODE);}</td>
+	<td>X_INPUT_PATTERN_4</td>
+</tr>
+<tr>
+	<td>echo</td>
+	<td>X_INPUT_PATTERN:${X_INPUT_PATTERN}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>endWhile</td>
+	<td></td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

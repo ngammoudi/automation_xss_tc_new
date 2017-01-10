@@ -135,6 +135,7 @@ function load_testplan_current_testconfig
     TEST_DURATION=`echo ${INJECTOR_PARAMS} | awk '{ print $2}'`
     TEST_GROUP_ID=`echo ${INJECTOR_PARAMS} | awk '{ print $3}'`
     TEST_NOTE=`echo ${INJECTOR_PARAMS} | awk '{ print $4}'`    
+    DATASET_ROW_ID=`echo ${INJECTOR_PARAMS} | awk '{ print $5}'`    
     APPLICATION_PATH=`echo $APPLICATION_PARAMS | awk '{print $1}' `
     echo " -- load_testplan_current_testconfig"
 }
@@ -207,7 +208,7 @@ if [ "${STAGE}" == "SECURITY_TEST" ]; then
   if [ ${last_status} -eq "0" ]; then
     load_testplan_current_testconfig
     TEST_DURATION=${SELENIUM_TEST_DURATION:-"${TEST_DURATION}"}
-    
+    export DATASET_ROW_ID
     if [[ ! "x${SELENIUM_TEST_SCRIPT}" == "x" && ! -z ${SELENIUM_TEST_SCRIPT} ]]; then
       # do test for all script folders or specified script folders
       if [ ${TEST_FOLDER_NAME} == "ALL_SCRIPT" ]; then
@@ -359,3 +360,4 @@ if [ "${STAGE}" == "UPLOAD_REPORT" ]; then
   fi
   exit_upload
 fi
+

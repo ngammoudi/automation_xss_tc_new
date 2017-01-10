@@ -13,7 +13,7 @@
 </thead><tr><td>echo</td><td>SiteExplorer/NewContent/HTMLFile/Content</td><td></td></tr>
 <tr>
 	<td>store</td>
-	<td>2222</td><td>MSG_CODE</td>
+	<td>2222</td><td>MSG_CODE</td></tr><tr><td>include</td><td>COMM_get_pattern_by_rowindex.html</td><td>DATASET=dataset_patterns.xml</td>
 </tr>
 <tr>
 	<td>include</td>
@@ -27,7 +27,7 @@
 
  <tr>
 	<td>storeEval</td>
-	<td>window.jjQuery('#cke_contents_contentHtml iframe').contents().find('body').html(&quot;&amp;lt;script&amp;gt;xalert(${MSG_CODE})&amp;lt;/script&amp;gt;&quot;)</td>
+	<td>window.jjQuery('#cke_contents_contentHtml iframe').contents().find('body').html(&quot;${X_INPUT_PATTERN_1}&quot;)</td>
 	<td></td></tr>
 <tr>
 	<td>click</td>

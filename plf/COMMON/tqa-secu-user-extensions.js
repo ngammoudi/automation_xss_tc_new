@@ -1,4 +1,153 @@
-// $Id: includeCommand.js 211 2007-08-10 11:16:25Z rob $
+/*
+ (C) Copyright MetaCommunications, Inc. 2006.
+     http://www.meta-comm.com
+     http://engineering.meta-comm.com
+
+Distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
+
+Unified file of user contributed extensions in following order
+  a) flowcontrol/goto_sel08.js
+  b) includeCommand4IDE_1_3/includeCommand_2.3.js
+  c) datadriven_v0.2/datadriven_v0.2-core.js
+*/
+
+function map_list( list, for_func, if_func )
+    {
+    var mapped_list = [];
+    for ( var i = 0; i < list.length; ++i )
+        {
+        var x = list[i];
+        if( null == if_func || if_func( i, x ) ) 
+            mapped_list.push( for_func( i, x ) );
+        }
+    return mapped_list;
+    }
+
+    
+// Modified to initialize GoTo labels/cycles list
+HtmlRunnerTestLoop.prototype.old_initialize = HtmlRunnerTestLoop.prototype.initialize
+
+HtmlRunnerTestLoop.prototype.initialize = function(htmlTestCase, metrics, seleniumCommandFactory)
+    {
+    this.gotoLabels  = {};
+    this.whileLabels = { ends: {}, whiles: {} };
+    
+    this.old_initialize(htmlTestCase, metrics, seleniumCommandFactory);
+    
+    this.initialiseLabels();
+    }
+
+HtmlRunnerTestLoop.prototype.initialiseLabels = function()
+    {
+    var command_rows = map_list( this.htmlTestCase.getCommandRows() 
+                               , function(i, x) { 
+                                    return x.getCommand()
+                                    }
+                               );
+
+    var cycles = [];
+    for( var i = 0; i < command_rows.length; ++i )
+        {
+        switch( command_rows[i].command.toLowerCase() )
+            {
+            case "label":
+                this.gotoLabels[ command_rows[i].target ] = i;
+                break;
+            case "while":
+            case "endwhile":
+                cycles.push( [command_rows[i].command.toLowerCase(), i] )
+                break;
+            }
+        }        
+        
+    var i = 0;
+    while( cycles.length )
+        {
+        if( i >= cycles.length )
+            throw new Error( "non-matching while/endWhile found" );
+            
+        switch( cycles[i][0] )
+            {
+            case "while":
+                if(    ( i+1 < cycles.length ) 
+                    && ( "endwhile" == cycles[i+1][0] )
+                    )
+                    {
+                    // pair found
+                    this.whileLabels.ends[ cycles[i+1][1] ] = cycles[i][1]
+                    this.whileLabels.whiles[ cycles[i][1] ] = cycles[i+1][1]
+                    
+                    cycles.splice( i, 2 );
+                    i = 0;
+                    }
+                else
+                    ++i;
+                break;
+            case "endwhile":
+                ++i;
+                break;
+            }
+        }
+                    
+    }    
+
+HtmlRunnerTestLoop.prototype.continueFromRow = function( row_num ) 
+    {
+    if(    row_num == undefined
+        || row_num == null
+        || row_num < 0
+        )
+        throw new Error( "Invalid row_num specified." );
+        
+    this.htmlTestCase.nextCommandRowIndex = row_num;
+    }
+    
+
+
+// do nothing. simple label
+Selenium.prototype.doLabel      = function(){};
+
+Selenium.prototype.doGotolabel  = function( label ) {
+
+    if( undefined == htmlTestRunner.currentTest.gotoLabels[label] ) 
+        throw new Error( "Specified label '" + label + "' is not found." );
+    
+    htmlTestRunner.currentTest.continueFromRow( htmlTestRunner.currentTest.gotoLabels[ label ] );
+    };
+    
+Selenium.prototype.doGoto = Selenium.prototype.doGotolabel;
+
+
+Selenium.prototype.doGotoIf = function( condition, label ) {
+    if( eval(condition) ) 
+        this.doGotolabel( label );
+    }
+
+
+    
+Selenium.prototype.doWhile = function( condition ) {
+    if( !eval(condition) )
+        {
+        var last_row = htmlTestRunner.currentTest.htmlTestCase.nextCommandRowIndex - 1
+        var end_while_row = htmlTestRunner.currentTest.whileLabels.whiles[ last_row ]
+        if( undefined == end_while_row ) 
+            throw new Error( "Corresponding 'endWhile' is not found." );
+        
+        htmlTestRunner.currentTest.continueFromRow( end_while_row + 1 );
+        }
+    }
+
+
+Selenium.prototype.doEndWhile = function() {
+    var last_row = htmlTestRunner.currentTest.htmlTestCase.nextCommandRowIndex - 1
+    var while_row = htmlTestRunner.currentTest.whileLabels.ends[ last_row ]
+    if( undefined == while_row ) 
+        throw new Error( "Corresponding 'While' is not found." );
+    
+    htmlTestRunner.currentTest.continueFromRow( while_row );
+    }
+    
+    // $Id: includeCommand.js 211 2007-08-10 11:16:25Z rob $
 /*extern document, window, XMLHttpRequest, ActiveXObject */
 /*extern Selenium, htmlTestRunner, LOG, HtmlTestCaseRow, testFrame, storedVars, URLConfiguration */
 
@@ -57,11 +206,12 @@
 // The real include selenium-command is placed at the end of this file as
 //  jslint complains about undefined functions otherwise
 Selenium.prototype.doIncludeCollapsed = function(locator, paramString) {
-    // do nothing, as rows are already included
+    // do nothing, as rows are already included	
 };
 
 Selenium.prototype.doIncludeExpanded = function(locator, paramString) {
-    // do nothing, as rows are already included
+    //store paramString passed to include test case into storedVars
+	this.storeParams(paramString);
 };
  
 
@@ -245,11 +395,16 @@ IncludeCommand.prepareTestCaseAsText = function(responseAsText, paramsArray) {
     // rz: somehow in my IE 7 this is not needed but is not bad as well
     testText = testText.replace(/<\s*td[^>]*>\s*<\s*\/td[^>]*>/ig,"<td>&nbsp;</td>");
 
-    // replace vars with their values in testText
+    /*
+     Do not replace else included test case will not work in WHILE loop
+     @see Selenium.prototype.doIncludeExpanded
+     @see Selenium.prototype.doInclude
+
     for ( var k = 0 ; k < paramsArray.length ; k++ ) {
-        var pair = paramsArray[k];
-        testText = testText.replace(pair[0],pair[1]);
+       var pair = paramsArray[k];
+       testText = testText.replace(pair[0],pair[1]);
     }
+    */
 
     // removes all  < /tr> 
     // in order to split on < tr>
@@ -412,10 +567,188 @@ IncludeCommand.prototype.doInclude = function(locator, paramString) {
     this.postProcessIncludeCommandRow(includeCmdRow);
 };
 
-
+// sakhunzai: include addon fix to work with flow control (include testcase which has goto labels/while loop)
 Selenium.prototype.doInclude = function(locator, paramString) {
     LOG.debug(IncludeCommand.LOG_PREFIX + " Version " + IncludeCommand.VERSION);
     var includeCommand = new IncludeCommand();
     includeCommand.doInclude(locator, paramString);
+	
+    try {
+        htmlTestRunner.currentTest.initialiseLabels();
+    } 
+    catch (e) {
+    	LOG.debug("Goto Script not used.");
+    }
+	//first time included
+	this.storeParams(paramString);
 };
 
+//store paramString variables into storedVar to be accessible within the included test case
+Selenium.prototype.storeParams = function(paramString) {
+  var paramPairs = paramString.split(",");
+  LOG.info('Include Parms:');
+  for ( var i = 0 ; i < paramPairs.length ; i++ ) {
+    var paramPair = paramPairs[i].split('='); 	
+	this.doStore(paramPair[1],paramPair[0]);
+	LOG.info(paramPair[0]+'=>'+paramPair[1]);
+  }
+};
+
+
+/************************************ DATADRIVEN EXTENSION START ********************************************/
+/*
+NAME:
+	datadriven
+	
+	Licensed under Apache License v2
+	http://www.apache.org/licenses/LICENSE-2.0
+
+PURPOSE:
+	Basic data driven testing.
+	
+	Full documentation at http://wiki.openqa.org/display/SEL/datadriven
+	
+	
+EXAMPLE USE:
+	The structure of your data driven test case will be;
+	-------------------------------------------
+	COMMAND       |TARGET          |VALUE
+	-------------------------------------------
+	loadTestData  |<file path>     |
+	while         |!testdata.EOF() |
+	testcommand1  |                |
+	testcommand...|                |
+	testcommandn  |                |
+	endWhile      |                |
+	-------------------------------------------
+
+AUTHOR:
+	Jonathan McBrien
+	jonathan@mcbrien.org
+	2008-10-22: v0.1:	Initial version.
+	2009-01-16: v0.2:	Updated for Firefox 3.
+				xmlTestData.prototype.load now uses the include extension's getIncludeDocumentBySynchronRequest method for better portability.
+				(Why reinvent the wheel? :) - with appreciation to the include extension's authors.)
+*/
+var XML = {};
+
+XML.serialize = function(node) {
+	if (typeof XMLSerializer != "undefined")
+		return (new XMLSerializer()).serializeToString(node) ;
+	else if (node.xml) return node.xml;
+	else throw "XML.serialize is not supported or can't serialize " + node;
+}
+
+function xmlTestData() {
+	this.xmlDoc = null;
+	this.testdata = null;
+	this.index = null;
+}
+
+
+xmlTestData.prototype.load = function(xmlloc) {
+	LOG.info(" ++ new IncludeCommand");
+	loader = new IncludeCommand();
+	LOG.info(" -- new IncludeCommand");
+	LOG.info(" ++ new IncludeCommand.getIncludeDocumentBySynchronRequest");
+	
+	var xmlHttpReq = IncludeCommand.getIncludeDocumentBySynchronRequest(xmlloc);
+	LOG.info(" -- new IncludeCommand.getIncludeDocumentBySynchronRequest");
+	
+	LOG.info(" ++ new xmlHttpReq.responseXML");
+	
+	this.xmlDoc = xmlHttpReq.responseXML;
+	LOG.info(" ++ new xmlHttpReq.responseXML");
+		
+	this.index = 0;
+	this.testdata = this.xmlDoc.getElementsByTagName("test");
+
+	if (this.testdata == null || this.testdata.length == 0) {
+		throw new Error("Test data couldn't be loaded or test data was empty.");
+	}
+}
+
+xmlTestData.prototype.EOF = function() {
+	if (this.index != null && this.index < this.testdata.length) return false;
+	return true;
+}
+
+xmlTestData.prototype.more = function() {
+	return !this.EOF();
+}
+
+xmlTestData.prototype.next = function() {
+	if (this.EOF()) {
+		LOG.error("No test data.");
+		return;
+	}
+	
+	LOG.info(XML.serialize(this.testdata[this.index]));	// Log should anything go wrong while testing with this data.
+
+	if (this.testdata[this.index].attributes.length != this.testdata[0].attributes.length) {
+		LOG.error("Inconsistent attribute length in test data.");
+		return;
+	}
+	
+	for (i=0; i<this.testdata[this.index].attributes.length; i++){
+		if (null == this.testdata[0].getAttribute(this.testdata[this.index].attributes[i].nodeName)) {
+			LOG.error("Inconsistent attribute names in test data.");
+			return;
+		}
+
+		selenium.doStore(this.testdata[this.index].attributes[i].nodeValue, this.testdata[this.index].attributes[i].nodeName);
+	}
+
+	this.index++;
+}
+
+Selenium.prototype.testdata = null;
+
+Selenium.prototype.doLoadTestData = function(xmlloc) {
+	testdata = new xmlTestData();
+	testdata.load(xmlloc);
+};
+
+Selenium.prototype.doNextTestData = function() {
+	testdata.next();
+};
+
+Selenium.prototype.doTestDataAtRowIndex = function(rowindex) {
+	testdata.lookatrow(rowindex);
+};
+
+xmlTestData.prototype.lookatrow = function(rowindex) {
+	if (this.EOF()) {
+		LOG.error("No test data.");
+		return;
+	}
+	
+	LOG.info(XML.serialize(this.testdata[this.index]));	// Log should anything go wrong while testing with this data.
+	LOG.info("this.testdata.length: " + this.testdata.length + ",rowindex=" + rowindex);
+
+	if (this.testdata[this.index].attributes.length != this.testdata[0].attributes.length) {
+		LOG.error("Inconsistent attribute length in test data.");
+		return;
+	}
+	
+	if (this.testdata.length > 0 )
+	{
+	  if (rowindex>this.testdata.length) rowindex = this.testdata.length ;
+	  if (rowindex<1) rowindex = 1;
+	  
+	  this.index=rowindex-1;
+	  LOG.info("this.index:" + this.index);
+	  for (i=0; i<this.testdata[this.index].attributes.length; i++){
+		  if (null == this.testdata[0].getAttribute(this.testdata[this.index].attributes[i].nodeName)) {
+			  LOG.error("Inconsistent attribute names in test data.");
+			  return;
+		  }
+
+		  selenium.doStore(this.testdata[this.index].attributes[i].nodeValue, this.testdata[this.index].attributes[i].nodeName);
+		  LOG.debug("this.testdata[this.index].attributes[i].nodeValue:"+this.testdata[this.index].attributes[i].nodeValue+", this.testdata[this.index].attributes[i].nodeName" + this.testdata[this.index].attributes[i].nodeName);
+	  }
+	}
+
+	this.index++;
+}
+/************************************ DATADRIVEN EXTENSION END **********************************************/

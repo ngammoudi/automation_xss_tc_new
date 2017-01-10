@@ -31,11 +31,17 @@ rm -f ${TESTSCRIPT}_latestresult
 ln -s ${test_result_dir} ${TESTSCRIPT}_latestresult
 
 cp ${automation_project_dir}/COMMON/COMM_*.html ${test_result_dir}
+cp ${automation_project_dir}/COMMON/*.xml ${test_result_dir}
+
 rm -f RESUL_SUITE_*.html
 rm -f SUITE_*.html
 
 cp ${automation_project_dir}/COMMON/tqa-secu-user-extensions.js ${test_result_dir}/user-extensions.js
 cp ${automation_project_dir}/COMMON/*.jar ${test_result_dir}
+if [ "x${DATASET_ROW_ID}" != "x" ]; then
+  sed -i -r 's/ SELECTED="true"/ SELECTED="false"/g' ${test_result_dir}/dataset_patterns.xml
+  sed -i -r 's/( ID="'${DATASET_ROW_ID}'".* SELECTED=")[^"]+"/\1true"/g' ${test_result_dir}/dataset_patterns.xml
+fi
 find ${automation_project_dir}/${TEST_MODULE}/* -type f | grep -v -E "(^SUITE|/SUITE|COMMON|TESTS/)" | grep -E "(^|/)XSS_(STOR|REFL|REG).*html$" | xargs -I {} cp {} ${test_result_dir}
 
 function replace_assertion()
@@ -93,7 +99,7 @@ sed -i "s#${test_definition_table}#${test_definition}\n${test_definition_table}#
 #sed -i "s#${test_definition_table}#${test_definition}\n${test_definition_table}#g" ${testsuite}
 #sed -i "s#${test_definition_table}#${test_definition}\n${test_definition_table}#g" ${testsuite}
 
-java -jar ${TEST_SELENIUM_VERSION_OPTION} ${TEST_SELENIUM_OTHER_OPTIONS} -ensureCleanSession -userExtensions user-extensions.js -htmlSuite "${TEST_BROWSER_OPTION}" "${TEST_TARGET_OPTION}/" "./${testsuite}" "./RESULT_${testsuite}"
+timeout 10m java -jar ${TEST_SELENIUM_VERSION_OPTION} ${TEST_SELENIUM_OTHER_OPTIONS} -ensureCleanSession -userExtensions user-extensions.js -htmlSuite "${TEST_BROWSER_OPTION}" "${TEST_TARGET_OPTION}/" "./${testsuite}" "./RESULT_${testsuite}"
 
 for testscript in `find * -type f | grep -v -E "(^SUITE_|^COMM_)" | grep -E "(^|/)XSS_(STOR|REFL|REG).*html$"`; do
   echo "`date`, INFO:: testscript=${testscript} "
@@ -130,7 +136,7 @@ for testsuite in `find SUITE_* -type f | grep -E "html$"`; do
    testscript2=`echo ${testscript} | sed -r 's#\.html$##g'`
    if [ ! ${init_element} -gt 0 ]; then
      init_element=1
-     sed -i "s/input type=\"hidden\" id=\"init_element\" value=\"#\"/input type=\"hidden\" id=\"init_element\" value=\"RESULT_${testsuite}\"/g" ${test_result_file}
+     sed -i "s/input type=\"hidden\" id=\"init_element\" value=\"\#\"/input type=\"hidden\" id=\"init_element\" value=\"RESULT_${testsuite}\"/g" ${test_result_file}
    fi
    nohup ../../COMMON/automation_xss_take_screen_shot.sh ${test_result_dir}/RESULT_${testsuite} $$ 5 &
    pid=$!
@@ -192,3 +198,4 @@ gzip user-extensions.js
 rm -f selenium-server-standalone*
 gzip COMM_*
 gzip XSS*
+
